@@ -1,0 +1,67 @@
+.all {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.label {
+    font-size: 15px;
+    font-family: 'Courier New', Courier, monospace;
+
+}
+
+.content {
+    border-radius: 5px;
+    color: gray;
+    width: 60%;
+    padding: 10px;
+    font-size: 20px;
+    border-width: 1px;
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+}
+
+.submit {
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 15px;
+    padding: 10px;
+    font-weight: bold;
+    margin: 10px
+}
+
+.reset {
+    border: none;
+    background-color: rgba(214, 213, 213, 0.784);
+    color: black;
+    border-radius: 5px;
+    font-size: 15px;
+    padding: 10px;
+    font-weight: bold;
+    margin: 10px
+}
+
+.error {
+    font-size: 12px;
+    color: red;
+    margin-top: 6px;
+}
+
+.field {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
