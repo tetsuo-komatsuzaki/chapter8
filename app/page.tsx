@@ -1,7 +1,7 @@
 "use client";
 
-import PostItem from "@/_components/PostItem/postItem";
-import { posts_URL }from "../_data/posts";
+import PostItem from "@/app/_components/PostItem/postItem";
+import { posts_URL }from "./_data/posts";
 
 import { useEffect, useState} from "react";
 

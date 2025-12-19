@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 import classes from "./page.module.css";
-import  {posts_URL}  from "@/_data/posts"; 
+import  {posts_URL}  from "@/app/_data/posts"; 
 import { useState, useEffect } from "react";
-import  {Post}  from "@/_types/Post";
+import  {Post}  from "@/app/_types/Post";
 
 type Props = {
   params: {

@@ -1,6 +1,6 @@
 import classes from "./postItem.module.css"
 import  Link  from "next/link";
-import type { Post }  from "@/_types/Post";  
+import type { Post }  from "@/app/_types/Post";  
 
 type PostItemProps = {
   post : Post

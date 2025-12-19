@@ -2,8 +2,8 @@
 
 import classes from "./page.module.css";
 import { useState } from "react";
-import { posts_URL } from "@/_data/posts";
-import { ErrorMessage } from "@/_components/ErrorMessage";
+import { posts_URL } from "@/app/_data/posts";
+import { ErrorMessage } from "@/app/_components/ErrorMessage";
 
 type Form  = {
   name: string;
