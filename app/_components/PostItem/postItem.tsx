@@ -1,9 +1,10 @@
 import classes from "./postItem.module.css"
 import  Link  from "next/link";
-import type { Post }  from "@/app/_types/Post";  
+import { MicroCmsPost } from "@/app/_types/_MicroCmcPost";
+
 
 type PostItemProps = {
-  post : Post
+  post : MicroCmsPost
 }
 
 export default function PostItem({ post }: PostItemProps) {
@@ -25,9 +26,9 @@ export default function PostItem({ post }: PostItemProps) {
           <div className={classes.meta}>
             <span>{date.toLocaleDateString()}</span>
             <span>
-              {post.categories.map((text, index) => {
+              {(post.category ?? []).map((category) => {
                 return (
-                  <span className={classes.categories} key={index}>{text}</span>
+                  <span className={classes.categories} key={category.id}>{category.name}</span>
                 )
               })}
             </span>

@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 import classes from "./page.module.css";
-import  {posts_URL}  from "@/app/_data/posts"; 
 import { useState, useEffect } from "react";
 import  {Post}  from "@/app/_types/Post";
+import { MicroCmsPost } from "@/app/_types/_MicroCmcPost";
 
 type Props = {
   params: {
@@ -12,23 +12,31 @@ type Props = {
 };
 
 type PostResponse = {
-    post : Post
+    post : MicroCmsPost;
   }
 
 
 export default function Detail({params}:Props) {
   const { id } = params;
-  const [postsDetail, setPostDetail] = useState<Post | null>(null);
+  const [postsDetail, setPostDetail] = useState<MicroCmsPost | null>(null);
   const [loading, setLoading] = useState<boolean>(false)
 
 
 
   useEffect(() => {
+
     const fetcher = async () => {
       setLoading(true)
-      const res = await fetch(`${posts_URL}/posts/${id}`)
-      const data:PostResponse = await res.json()
-      setPostDetail(data.post)
+      const res = await fetch(`https://tetsuo9293.microcms.io/api/v1/blog/${id}`,
+        {
+          headers: {
+            'X-MICROCMS-API-KEY':process.env.NEXT_PUBLIC_MICROCMS_API_KEY as string,
+          }
+        }
+      )
+      const data:MicroCmsPost = await res.json()
+      setPostDetail(data)
+      console.log("APIレスポンス:", data)
       setLoading(false)
     };
     fetcher()
@@ -46,15 +54,15 @@ export default function Detail({params}:Props) {
   return (
     <>
       <div>
-        <Image src={postsDetail.thumbnailUrl} alt={postsDetail.title} className={classes.thumbnail} width={800} height={400}/>
+        {postsDetail.thumbnail && (<Image src={postsDetail.thumbnail.url} alt={postsDetail.title} className={classes.thumbnail} width={800} height={400}/>)}
       </div>
       <div className={classes.article}>
         <div className={classes.meta}>
           <span>{new Date(postsDetail.createdAt).toLocaleDateString()}</span>
           <span>
-            {postsDetail.categories.map((text, index) => {
+            {(postsDetail.category ?? []).map((category) => {
               return (
-                <span className="categories" key={index}>{text}</span>
+                <span className={classes.categories} key={category.id}>{category.name}</span>
               )
             })}
           </span>

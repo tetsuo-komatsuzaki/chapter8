@@ -1,9 +1,9 @@
 "use client";
 
 import PostItem from "@/app/_components/PostItem/postItem";
-import { posts_URL }from "./_data/posts";
-
 import { useEffect, useState} from "react";
+import { MicroCmsPost } from "./_types/_MicroCmcPost";  
+
 
 type Post = {
     id: number
@@ -18,16 +18,22 @@ type PostType = {
   posts : Post[];
 };
 
+
+
 export default function Post() {
-  const [posts,setPosts] = useState<Post[]>([]);
+  const [posts,setPosts] = useState<MicroCmsPost[]>([]);
   const [loading,setLoading] = useState<boolean>(false)
 
 useEffect(() =>{
   const fetcher = async() =>{
     setLoading(true)
-    const res = await fetch(`${posts_URL}/posts`)
-    const {posts}:PostType = await res.json();
-    setPosts(posts)
+    const res = await fetch(`https://tetsuo9293.microcms.io/api/v1/blog`,{
+      headers: {
+        'X-MICROCMS-API-KEY':process.env.NEXT_PUBLIC_MICROCMS_API_KEY as string,
+      },
+    })
+    const {contents}= await res.json();
+    setPosts(contents)
     setLoading(false)
   }
   fetcher()
