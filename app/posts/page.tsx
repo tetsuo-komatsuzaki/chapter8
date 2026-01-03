@@ -2,17 +2,26 @@
 
 import PostItem from "@/app/_components/PostItem/postItem";
 import { useEffect, useState} from "react";
-import { MicroCmsPost } from "./_types/_MicroCmcPost";  
 
+
+type Category = {
+  id: number;
+  name: string;
+}
+
+type PostCategory = {
+  category: Category
+}
 
 type Post = {
-    id: number
-  title: string
-  thumbnailUrl: string
-  createdAt: string
-  categories: string[]
-  content: string
-};
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  thumbnailUrl: string;
+  postCategories: PostCategory[]
+}
+
 
 type PostType = {
   posts : Post[];
@@ -21,19 +30,15 @@ type PostType = {
 
 
 export default function Post() {
-  const [posts,setPosts] = useState<MicroCmsPost[]>([]);
+  const [posts,setPosts] = useState<Post[]>([]);
   const [loading,setLoading] = useState<boolean>(false)
 
 useEffect(() =>{
   const fetcher = async() =>{
     setLoading(true)
-    const res = await fetch(`https://tetsuo9293.microcms.io/api/v1/blog`,{
-      headers: {
-        'X-MICROCMS-API-KEY':process.env.NEXT_PUBLIC_MICROCMS_API_KEY as string,
-      },
-    })
-    const {contents}= await res.json();
-    setPosts(contents)
+    const res = await fetch(`/api/admin/posts`)
+    const json = await res.json();
+    setPosts(json.posts)
     setLoading(false)
   }
   fetcher()
@@ -49,8 +54,8 @@ if(!loading&&posts.length === 0){
   return (
 
     <>
-      {posts.map((elem) => (
-        <PostItem key={elem.id} post={elem} />
+      {posts.map((post) => (
+        <PostItem key={post.id} post={post} />
       ))}
 
     </>

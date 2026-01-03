@@ -2,8 +2,6 @@
 import Image from "next/image";
 import classes from "./page.module.css";
 import { useState, useEffect } from "react";
-import  {Post}  from "@/app/_types/Post";
-import { MicroCmsPost } from "@/app/_types/_MicroCmcPost";
 
 type Props = {
   params: {
@@ -11,14 +9,28 @@ type Props = {
   };
 };
 
-type PostResponse = {
-    post : MicroCmsPost;
-  }
+type Category = {
+  id: number;
+  name: string;
+}
+
+type PostCategory = {
+  category: Category
+}
+
+type Post = {
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  thumbnailUrl: string;
+  postCategories: PostCategory[]
+}
 
 
-export default function Detail({params}:Props) {
-  const { id } = params;
-  const [postsDetail, setPostDetail] = useState<MicroCmsPost | null>(null);
+export default function Detail({ params }: Props) {
+  const postId = params.id
+  const [postsDetail, setPostDetail] = useState<Post|null>(null);
   const [loading, setLoading] = useState<boolean>(false)
 
 
@@ -27,20 +39,13 @@ export default function Detail({params}:Props) {
 
     const fetcher = async () => {
       setLoading(true)
-      const res = await fetch(`https://tetsuo9293.microcms.io/api/v1/blog/${id}`,
-        {
-          headers: {
-            'X-MICROCMS-API-KEY':process.env.NEXT_PUBLIC_MICROCMS_API_KEY as string,
-          }
-        }
-      )
-      const data:MicroCmsPost = await res.json()
-      setPostDetail(data)
-      console.log("APIレスポンス:", data)
+      const res = await fetch(`/api/admin/posts/${postId}`)
+      const json = await res.json()
+      setPostDetail(json.post)
       setLoading(false)
     };
     fetcher()
-  }, [id]);
+  }, [postId]);
   if (loading) {
     return <div>読み込み中...</div>
   }
@@ -53,16 +58,13 @@ export default function Detail({params}:Props) {
 
   return (
     <>
-      <div>
-        {postsDetail.thumbnail && (<Image src={postsDetail.thumbnail.url} alt={postsDetail.title} className={classes.thumbnail} width={800} height={400}/>)}
-      </div>
       <div className={classes.article}>
         <div className={classes.meta}>
           <span>{new Date(postsDetail.createdAt).toLocaleDateString()}</span>
           <span>
-            {(postsDetail.category ?? []).map((category) => {
+            {postsDetail.postCategories.map((pc) => {
               return (
-                <span className={classes.categories} key={category.id}>{category.name}</span>
+                <span className={classes.categories} key={pc.category.id}>{pc.category.name}</span>
               )
             })}
           </span>

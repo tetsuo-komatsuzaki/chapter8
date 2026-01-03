@@ -1,0 +1,27 @@
+.sidebar {
+  width: 220px;
+  background-color: #f2f2f2; /* 淡い灰色 */
+  padding: 24px 0;
+
+  /* ヘッダーに被らないための設定 */
+  height: calc(100vh - 64px); /* ヘッダー高さ分を引く */
+  overflow-y: auto;
+}
+
+.nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+    width: 100%;
+    padding: 10px 16px;
+    color: #000000; /* 黒文字 */
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.item:hover {
+ background-color: #dbeafe;
+}
