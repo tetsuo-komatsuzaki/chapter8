@@ -39,7 +39,7 @@ export default function Detail({ params }: Props) {
 
     const fetcher = async () => {
       setLoading(true)
-      const res = await fetch(`/api/admin/posts/${postId}`)
+      const res = await fetch(`/api/posts/${postId}`)
       const json = await res.json()
       setPostDetail(json.post)
       setLoading(false)

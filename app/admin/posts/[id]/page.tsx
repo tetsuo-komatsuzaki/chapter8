@@ -17,28 +17,28 @@
 
 "use client";
 
-import Styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import PostForm from "@/app/_components/Form/PostForm";
 
 /* ===== 型定義 ===== */
 
 type Category = {
-  id : number;
+  id: number;
   name: string;
 }
 
 type PostCategory = {
-  category : Category
+  category: Category
 }
 
 type Post = {
-id : number;
-title : string;
-createdAt : string;
-content: string;
-thumbnailUrl:string;
-postCategories : PostCategory[]
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  thumbnailUrl: string;
+  postCategories: PostCategory[]
 }
 
 /* ===== Props（動的ルート） ===== */
@@ -67,40 +67,40 @@ export default function AdminEditPostPage({ params }: Props) {
   const [categories, setCategories] = useState<Category[]>([]);
 
   /* ===== 初期表示用データ ===== */
-const [title,setTitle] = useState<string>("");
-const [content,setContent] = useState<string>("");
-const [thumbnailUrl,setThumbnailUrl] = useState<string>(""); 
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
 
 
   /* ===== カテゴリー選択状態 ===== */
-const [selectedCategories,setSelectedCategories] = useState<number[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
   /* ===== カテゴリー取得 ===== */
-useEffect (() => {
-  const fetchCategories = async () =>{
-    const res = await fetch("/api/admin/categories");
-    const data = await res.json();
-    setCategories(data.categories);
-  }
-  fetchCategories();
-},[])
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await fetch("/api/admin/categories");
+      const data = await res.json();
+      setCategories(data.categories);
+    }
+    fetchCategories();
+  }, [])
 
   /* ===== 記事詳細取得 ===== */
-useEffect(() =>{
-  const fetchPost = async()=>{
-    const res = await fetch(`/api/admin/posts/${postId}`)
+  useEffect(() => {
+    const fetchPost = async () => {
+      const res = await fetch(`/api/admin/posts/${postId}`)
       const json = await res.json();
-    const data: Post = json.post;
-    setTitle(data.title);
-    setContent(data.content);
-    setThumbnailUrl(data.thumbnailUrl);
-    setSelectedCategories(
-      data.postCategories.map((pc) => pc.category.id)
-    )
-    //PostCategory[] → number[]にデータ整形している作業
-  };
-  fetchPost();
-},[postId])
+      const data: Post = json.post;
+      setTitle(data.title);
+      setContent(data.content);
+      setThumbnailUrl(data.thumbnailUrl);
+      setSelectedCategories(
+        data.postCategories.map((pc) => pc.category.id)
+      )
+      //PostCategory[] → number[]にデータ整形している作業
+    };
+    fetchPost();
+  }, [postId])
 
   /* ===== チェックボックス切替 ===== */
   const toggleCategory = (id: number) => {
@@ -134,10 +134,10 @@ useEffect(() =>{
     router.push("/admin/posts");
   };
 
-  const handleDelete = async() =>{
+  const handleDelete = async () => {
     const ok = window.confirm("本当に削除しますか？");
-    if(!ok) return;
-    await fetch(`/api/admin/posts/${postId}`,{
+    if (!ok) return;
+    await fetch(`/api/admin/posts/${postId}`, {
       method: "DELETE",
     });
     alert("記事を削除しました");
@@ -146,65 +146,19 @@ useEffect(() =>{
   }
 
   return (
-    <div>
-      <h3 className={Styles.title}>記事編集</h3>
+    <PostForm
+      title="記事編集"
+      onSubmit={handleSubmit}
+      onDelete={handleDelete}
+      initialValues={{
+        title,
+        content,
+        thumbnailUrl,
+      }}
+      categories={categories}
+      selectedCategories={selectedCategories}
+      onToggleCategory={toggleCategory}
+    />
+  )
 
-      <form onSubmit={handleSubmit}>
-        <div className={Styles.field}>
-          <label htmlFor="title">タイトル</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            defaultValue={title}
-            required
-          />
-        </div>
-
-        <div className={Styles.field}>
-          <label htmlFor="content">内容</label>
-          <textarea
-            id="content"
-            name="content"
-            defaultValue={content}
-            required
-          />
-        </div>
-
-        <div className={Styles.field}>
-          <label htmlFor="thumbnailUrl">サムネイルURL</label>
-          <input
-            type="text"
-            id="thumbnailUrl"
-            name="thumbnailUrl"
-            defaultValue={thumbnailUrl}
-            required
-          />
-        </div>
-
-        <div className={Styles.field}>
-          <label>カテゴリー</label>
-          {categories.map((category) => (
-            <label key={category.id}>
-              <input
-                type="checkbox"
-                checked={selectedCategories.includes(category.id)}
-                onChange={() => toggleCategory(category.id)}
-              />
-              {category.name}
-            </label>
-          ))}
-        </div>
-<div>
-        <button className={Styles.createButton} type="submit">
-          更新
-        </button>
-        <button className={Styles.deleteButton} type="button" onClick={handleDelete}>
-          削除
-        </button>
-</div>
-
-      </form>
-    </div>
-  );
 }
