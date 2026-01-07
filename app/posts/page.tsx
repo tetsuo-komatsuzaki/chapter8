@@ -1,22 +1,33 @@
 "use client";
 
-import PostItem from "@/_components/PostItem/postItem";
-import { posts_URL }from "../_data/posts";
-
+import PostItem from "@/app/_components/PostItem/postItem";
 import { useEffect, useState} from "react";
 
+
+type Category = {
+  id: number;
+  name: string;
+}
+
+type PostCategory = {
+  category: Category
+}
+
 type Post = {
-    id: number
-  title: string
-  thumbnailUrl: string
-  createdAt: string
-  categories: string[]
-  content: string
-};
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  thumbnailUrl: string;
+  postCategories: PostCategory[]
+}
+
 
 type PostType = {
   posts : Post[];
 };
+
+
 
 export default function Post() {
   const [posts,setPosts] = useState<Post[]>([]);
@@ -25,9 +36,9 @@ export default function Post() {
 useEffect(() =>{
   const fetcher = async() =>{
     setLoading(true)
-    const res = await fetch(`${posts_URL}/posts`)
-    const {posts}:PostType = await res.json();
-    setPosts(posts)
+    const res = await fetch(`/api/admin/posts`)
+    const json = await res.json();
+    setPosts(json.posts)
     setLoading(false)
   }
   fetcher()
@@ -43,8 +54,8 @@ if(!loading&&posts.length === 0){
   return (
 
     <>
-      {posts.map((elem) => (
-        <PostItem key={elem.id} post={elem} />
+      {posts.map((post) => (
+        <PostItem key={post.id} post={post} />
       ))}
 
     </>

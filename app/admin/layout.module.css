@@ -1,0 +1,10 @@
+.container {
+  display: flex;                 /* ← これが超重要 */
+  min-height: calc(100vh - 64px);
+}
+
+.main {
+  flex: 1;
+  padding: 24px;
+  background-color: #ffffff;
+}

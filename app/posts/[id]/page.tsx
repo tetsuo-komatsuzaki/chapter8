@@ -1,9 +1,7 @@
 "use client";
 import Image from "next/image";
 import classes from "./page.module.css";
-import  {posts_URL}  from "@/_data/posts"; 
 import { useState, useEffect } from "react";
-import  {Post}  from "@/_types/Post";
 
 type Props = {
   params: {
@@ -11,28 +9,43 @@ type Props = {
   };
 };
 
-type PostResponse = {
-    post : Post
-  }
+type Category = {
+  id: number;
+  name: string;
+}
+
+type PostCategory = {
+  category: Category
+}
+
+type Post = {
+  id: number;
+  title: string;
+  createdAt: string;
+  content: string;
+  thumbnailUrl: string;
+  postCategories: PostCategory[]
+}
 
 
-export default function Detail({params}:Props) {
-  const { id } = params;
-  const [postsDetail, setPostDetail] = useState<Post | null>(null);
+export default function Detail({ params }: Props) {
+  const postId = params.id
+  const [postsDetail, setPostDetail] = useState<Post|null>(null);
   const [loading, setLoading] = useState<boolean>(false)
 
 
 
   useEffect(() => {
+
     const fetcher = async () => {
       setLoading(true)
-      const res = await fetch(`${posts_URL}/posts/${id}`)
-      const data:PostResponse = await res.json()
-      setPostDetail(data.post)
+      const res = await fetch(`/api/posts/${postId}`)
+      const json = await res.json()
+      setPostDetail(json.post)
       setLoading(false)
     };
     fetcher()
-  }, [id]);
+  }, [postId]);
   if (loading) {
     return <div>読み込み中...</div>
   }
@@ -45,16 +58,13 @@ export default function Detail({params}:Props) {
 
   return (
     <>
-      <div>
-        <Image src={postsDetail.thumbnailUrl} alt={postsDetail.title} className={classes.thumbnail} width={800} height={400}/>
-      </div>
       <div className={classes.article}>
         <div className={classes.meta}>
           <span>{new Date(postsDetail.createdAt).toLocaleDateString()}</span>
           <span>
-            {postsDetail.categories.map((text, index) => {
+            {postsDetail.postCategories.map((pc) => {
               return (
-                <span className="categories" key={index}>{text}</span>
+                <span className={classes.categories} key={pc.category.id}>{pc.category.name}</span>
               )
             })}
           </span>

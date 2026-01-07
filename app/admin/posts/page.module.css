@@ -1,0 +1,28 @@
+.top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.createButton {
+  padding: 8px 16px;
+  background-color: #2563eb; /* 青 */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.createButton:hover {
+  background-color: #1d4ed8;
+}
+
+.PostItem {
+    border-bottom: 1px solid rgb(194, 192, 192);
+    margin-bottom: 10px;
+}
+
+.date{
+    color:rgb(194, 192, 192)
+}

@@ -1,5 +1,5 @@
 export type Post = {
-    id: number
+  id: number
   title: string
   thumbnailUrl: string
   createdAt: string

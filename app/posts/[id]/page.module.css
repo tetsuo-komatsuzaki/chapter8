@@ -19,3 +19,12 @@
   display: block;
   margin: 50px auto 10px auto;
 }
+
+.categories {
+  border: solid;
+  border-radius: 10%;
+  border-color: #3d2cae86;
+  border-width: 1px;
+  color: #3d2cae86;
+  margin: 5px;
+}
