@@ -6,25 +6,10 @@ import { useState, useEffect } from "react";
 import PostForm from "@/app/_components/Form/PostForm";
 
 
-type Category = {
-  id: number;
-  name: string
-}
-
-
 
 export default function AdminCreatePostPage() {
 
-  const [categories, setCategories] = useState<Category[]>([])
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await fetch("/api/admin/categories");
-      const data = await res.json();
-      setCategories(data.categories);
-    }
-    fetchCategories();
-  }, [])
 
   //useEffectでカテゴリー一覧を取得して、チェックボックスで表示する
 
@@ -70,9 +55,9 @@ export default function AdminCreatePostPage() {
     <PostForm 
     title="記事作成"
     onSubmit={handleSubmit}
-    categories={categories}
     selectedCategories={selectedCategories}
     onToggleCategory={toggleCategory}
+    submitLabel="新規作成"
     />
   )
 

@@ -1,6 +1,7 @@
 "use client"
 
 import Styles from "./PostForm.module.css"
+import { useEffect,useState } from "react"
 
 type PropsValues = {
     title:string;
@@ -18,15 +19,26 @@ title:string;
 onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 onDelete?: () =>void;
 initialValues?: PropsValues;
-categories:Category[];
+submitLabel: string;
 selectedCategories:number[];
 onToggleCategory:(id: number) =>void;
 
 }
 
 
-export default function PostForm({title,onSubmit,onDelete,initialValues,categories,selectedCategories,onToggleCategory}:PostFormProps){
-    return(
+export default function PostForm({title,submitLabel,onSubmit,onDelete,initialValues,selectedCategories,onToggleCategory}:PostFormProps){
+  const [categories, setCategories] = useState<Category[]>([]); 
+  
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await fetch("/api/admin/categories");
+      const data = await res.json();
+      setCategories(data.categories);
+    }
+    fetchCategories();
+  }, [])
+
+  return(
  <div>
       <h3 className={Styles.title}>{title}</h3>
 
@@ -80,7 +92,7 @@ export default function PostForm({title,onSubmit,onDelete,initialValues,categori
         </div>
         <div>
           <button className={Styles.createButton} type="submit">
-            更新
+            {submitLabel}
           </button>
           <button className={Styles.deleteButton} type="button" onClick={onDelete}>
             削除

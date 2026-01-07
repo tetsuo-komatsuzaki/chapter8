@@ -63,8 +63,7 @@ export default function AdminEditPostPage({ params }: Props) {
   //JavaScriptからページ遷移をするための道具を取得している。後に記載しているrouter.push("/admin/posts");で更新後にページ遷移したいため
   const postId = params.id;
 
-  /* ===== カテゴリー一覧 ===== */
-  const [categories, setCategories] = useState<Category[]>([]);
+
 
   /* ===== 初期表示用データ ===== */
   const [title, setTitle] = useState<string>("");
@@ -75,15 +74,6 @@ export default function AdminEditPostPage({ params }: Props) {
   /* ===== カテゴリー選択状態 ===== */
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
-  /* ===== カテゴリー取得 ===== */
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await fetch("/api/admin/categories");
-      const data = await res.json();
-      setCategories(data.categories);
-    }
-    fetchCategories();
-  }, [])
 
   /* ===== 記事詳細取得 ===== */
   useEffect(() => {
@@ -155,9 +145,9 @@ export default function AdminEditPostPage({ params }: Props) {
         content,
         thumbnailUrl,
       }}
-      categories={categories}
       selectedCategories={selectedCategories}
       onToggleCategory={toggleCategory}
+      submitLabel="更新"
     />
   )
 
