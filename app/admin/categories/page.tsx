@@ -4,7 +4,7 @@ import Styles from "./page.module.css"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import Link from "next/link"
-
+import { useSupabaseSession } from "@/_hooks/useSupabaseSession"
 
 type Category = {
   id: number;
@@ -13,15 +13,22 @@ type Category = {
 
 
 export default function AdminCategoryPage() {
+  const {token} = useSupabaseSession();
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    if(!token)return
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/admin/categories");
+        const res = await fetch("/api/admin/categories",{
+          headers: {
+          'Content-Type': 'application/json',
+          Authorization: token, // 👈 Header に token を付与
+        },
+        });
         const data = await res.json();
         setCategories(data.categories)
       } catch (error) {
@@ -31,7 +38,7 @@ export default function AdminCategoryPage() {
       }
     };
     fetchCategories();
-  }, [])
+  }, [token])
 
   if (loading) {
     return <p>読み込み中...</p>

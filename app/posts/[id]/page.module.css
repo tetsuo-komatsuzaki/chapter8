@@ -16,8 +16,7 @@
 }
 
 .thumbnail {
-  display: block;
-  margin: 50px auto 10px auto;
+object-fit: cover;
 }
 
 .categories {
@@ -27,4 +26,12 @@
   border-width: 1px;
   color: #3d2cae86;
   margin: 5px;
+}
+
+.thumbnailWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9; /* 横いっぱい + 高さ自動 */
+  margin-bottom: 12px;
+  overflow: hidden;
 }

@@ -18,7 +18,7 @@ type Post = {
   title: string;
   createdAt: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: PostCategory[]
 }
 
@@ -36,7 +36,7 @@ export default function Post() {
 useEffect(() =>{
   const fetcher = async() =>{
     setLoading(true)
-    const res = await fetch(`/api/admin/posts`)
+    const res = await fetch(`/api/posts`)
     const json = await res.json();
     setPosts(json.posts)
     setLoading(false)

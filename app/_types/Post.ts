@@ -1,7 +1,7 @@
 export type Post = {
   id: number
   title: string
-  thumbnailUrl: string
+  thumbnailImageKey: string
   createdAt: string
   categories: string[]
   content: string

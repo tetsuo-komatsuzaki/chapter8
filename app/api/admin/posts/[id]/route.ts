@@ -1,7 +1,7 @@
+import { prisma } from '@/app/_libs/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+
 
 export const GET = async (
   request: NextRequest,
@@ -40,7 +40,7 @@ interface UpdatePostRequestBody {
   title: string
   content: string
   categories: { id: number }[]
-  thumbnailUrl: string
+  thumbnailImageKey: string
 }
 
 // PUTという命名にすることで、PUTリクエストの時にこの関数が呼ばれる
@@ -52,7 +52,7 @@ export const PUT = async (
   const { id } = params
 
   // リクエストのbodyを取得
-  const { title, content, categories, thumbnailUrl }: UpdatePostRequestBody = await request.json()
+  const { title, content, categories, thumbnailImageKey  }: UpdatePostRequestBody = await request.json()
 
   try {
     // idを指定して、Postを更新
@@ -63,7 +63,7 @@ export const PUT = async (
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     })
 

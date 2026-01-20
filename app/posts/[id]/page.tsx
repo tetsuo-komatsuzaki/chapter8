@@ -2,6 +2,7 @@
 import Image from "next/image";
 import classes from "./page.module.css";
 import { useState, useEffect } from "react";
+import { supabase } from "@/app/_libs/supabase";
 
 type Props = {
   params: {
@@ -23,17 +24,16 @@ type Post = {
   title: string;
   createdAt: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: PostCategory[]
 }
 
 
 export default function Detail({ params }: Props) {
   const postId = params.id
-  const [postsDetail, setPostDetail] = useState<Post|null>(null);
+  const [postsDetail, setPostDetail] = useState<Post | null>(null);
   const [loading, setLoading] = useState<boolean>(false)
-
-
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
   useEffect(() => {
 
@@ -46,6 +46,19 @@ export default function Detail({ params }: Props) {
     };
     fetcher()
   }, [postId]);
+
+  useEffect(() => {
+    if (!postsDetail?.thumbnailImageKey) return;
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage
+      .from("post_thumbnail")
+      .getPublicUrl(postsDetail.thumbnailImageKey);
+
+    setThumbnailUrl(publicUrl);
+  }, [postsDetail]);
+
   if (loading) {
     return <div>読み込み中...</div>
   }
@@ -55,11 +68,26 @@ export default function Detail({ params }: Props) {
   }
 
 
-
   return (
     <>
       <div className={classes.article}>
+        {postsDetail.thumbnailImageKey && (
+          <div>
+            {thumbnailUrl && (
+              <div className={classes.thumbnailWrapper}>
+                <Image
+                  src={thumbnailUrl}
+                  alt="thumbnail"
+                  fill
+                  className={classes.thumbnail}
+                  priority
+                />
+              </div>
+            )}
+          </div>
+        )}
         <div className={classes.meta}>
+
           <span>{new Date(postsDetail.createdAt).toLocaleDateString()}</span>
           <span>
             {postsDetail.postCategories.map((pc) => {

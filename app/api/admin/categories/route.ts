@@ -1,7 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/app/_libs/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
-const prisma = new PrismaClient();
+
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
 
 export const GET = async(request: NextRequest) =>{
     try{

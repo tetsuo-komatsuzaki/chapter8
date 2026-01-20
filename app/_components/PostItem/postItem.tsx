@@ -1,5 +1,6 @@
 import classes from "./postItem.module.css"
-import  Link  from "next/link";
+import Link from "next/link";
+import Image from "next/image";
 
 
 type Category = {
@@ -16,12 +17,12 @@ type Post = {
   title: string;
   createdAt: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: PostCategory[]
 }
 
 type PostItemProps = {
-  post:Post
+  post: Post
 }
 
 
@@ -35,23 +36,23 @@ export default function PostItem({ post }: PostItemProps) {
       : post.content;;
 
   return (
-      <Link href={`/posts/${post.id}`} className={classes.linkwap}>
-        <div className={classes.article}>
-          <div className={classes.meta}>
-            <span>{date.toLocaleDateString()}</span>
-            <span>
-              {post.postCategories?.map((pc) => {
-                return (
-                  <span className={classes.categories} key={pc.category.id}>{pc.category.name}</span>
-                )
-              })}
-            </span>
+    <Link href={`/posts/${post.id}`} className={classes.linkwap}>
+      <div className={classes.article}>
+        <div className={classes.meta}>
+          <span>{date.toLocaleDateString()}</span>
+          <span>
+            {post.postCategories?.map((pc) => {
+              return (
+                <span className={classes.categories} key={pc.category.id}>{pc.category.name}</span>
+              )
+            })}
+          </span>
 
-          </div>
-          <h1>{post.title}</h1>
-          <p dangerouslySetInnerHTML={{ __html: contentReview }}></p>
         </div>
-      </Link>
+        <h1>{post.title}</h1>
+        <p dangerouslySetInnerHTML={{ __html: contentReview }}></p>
+      </div>
+    </Link>
   )
 
 }
