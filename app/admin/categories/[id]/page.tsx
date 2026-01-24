@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CategoryForm from "@/app/_components/Form/CategoryForm";
 import { useSupabaseSession } from "@/_hooks/useSupabaseSession";
+import { useAdminFetch } from "@/app/admin/_hooks/useAdminFetch";
 
 type Category = {
   id: number;
@@ -29,6 +30,9 @@ type Props = {
   }
 }
 
+type AdminCategoryDetailResponse = {
+  category: Category;
+}
 
 export default function AdminEditCategoryPage({ params }: Props) {
   const { token } = useSupabaseSession();
@@ -37,20 +41,18 @@ export default function AdminEditCategoryPage({ params }: Props) {
 
   const [name, setName] = useState<string>("");
 
+  const{data,error,isLoading} = useAdminFetch<AdminCategoryDetailResponse>(
+    `categories/${categoryId}`,
+    token ?? undefined
+  )
+  const category = data?.category;
+
   useEffect(() => {
-    if (!token) return
-    const fetchName = async () => {
-      const res = await fetch(`/api/admin/categories/${categoryId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-        }
-      })
-      const data = await res.json();
-      setName(data.category.name);
-    }
-    fetchName()
-  }, [categoryId, token])
+    if (!category) return;
+      setName(category.name);
+  }, [category]);
+
+
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if(!token)return

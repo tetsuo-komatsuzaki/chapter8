@@ -1,7 +1,7 @@
 "use client";
 
 import PostItem from "@/app/_components/PostItem/postItem";
-import useSWR from "swr";
+import {useFetch} from "@/app/_hooks/useFetch"
 
 
 type Category = {
@@ -31,10 +31,7 @@ type PostType = {
 
 export default function Post() {
 
-const fetcher = (url:string) =>
-  fetch(url).then(res=>res.json())
-
-const {data,error,isLoading} = useSWR<PostType>('/api/posts',fetcher)
+const {data,error,isLoading} = useFetch<PostType>("posts")
 
 
 if(isLoading){

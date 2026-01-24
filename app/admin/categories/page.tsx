@@ -5,42 +5,29 @@ import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSupabaseSession } from "@/_hooks/useSupabaseSession"
+import { useAdminFetch } from "@/app/admin/_hooks/useAdminFetch"
 
 type Category = {
   id: number;
   name: string
 }
 
+type AdminCategoriesResponse = {
+  categories: Category[];
+}
 
 export default function AdminCategoryPage() {
   const {token} = useSupabaseSession();
   const router = useRouter();
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState<boolean>(false)
 
-  useEffect(() => {
-    if(!token)return
-    const fetchCategories = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/admin/categories",{
-          headers: {
-          'Content-Type': 'application/json',
-          Authorization: token, // 👈 Header に token を付与
-        },
-        });
-        const data = await res.json();
-        setCategories(data.categories)
-      } catch (error) {
-        console.error("カテゴリー取得エラー", error);
-      } finally {
-        setLoading(false)
-      }
-    };
-    fetchCategories();
-  }, [token])
+  const{data,error,isLoading}= useAdminFetch<AdminCategoriesResponse>(
+    "categories",
+    token ?? undefined
+  )
 
-  if (loading) {
+  const categories = data?.categories ?? [];
+
+  if (isLoading) {
     return <p>読み込み中...</p>
   }
 

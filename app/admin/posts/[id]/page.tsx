@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PostForm from "@/app/_components/Form/PostForm";
 import { useSupabaseSession } from "@/_hooks/useSupabaseSession";
+import { useAdminFetch } from "@/app/admin/_hooks/useAdminFetch";
 
 /* ===== 型定義 ===== */
 
@@ -57,6 +58,10 @@ type Props = {
 //  }
 //}
 
+type AdminPostDetailResponse = {
+  post: Post;
+}
+
 /* ===== コンポーネント ===== */
 
 export default function AdminEditPostPage({ params }: Props) {
@@ -76,29 +81,24 @@ export default function AdminEditPostPage({ params }: Props) {
   /* ===== カテゴリー選択状態 ===== */
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
+const {data,error,isLoading} = useAdminFetch<AdminPostDetailResponse>(
+  `posts/${postId}`,
+  token ?? undefined)
+
+  const post = data?.post;
 
   /* ===== 記事詳細取得 ===== */
   useEffect(() => {
-    if (!token) return
-    const fetchPost = async () => {
-      const res = await fetch(`/api/admin/posts/${postId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-        }
-      })
-      const json = await res.json();
-      const data: Post = json.post;
-      setTitle(data.title);
-      setContent(data.content);
-      setThumbnailImageKey(data.thumbnailImageKey);
+    if (!post) return;
+      setTitle(post.title);
+      setContent(post.content);
+      setThumbnailImageKey(post.thumbnailImageKey);
       setSelectedCategories(
-        data.postCategories.map((pc) => pc.category.id)
+        post.postCategories.map((pc) => pc.category.id)
       )
-      //PostCategory[] → number[]にデータ整形している作業
-    };
-    fetchPost();
-  }, [postId, token])
+  }, [post])
+
+
 
   /* ===== チェックボックス切替 ===== */
   const toggleCategory = (id: number) => {

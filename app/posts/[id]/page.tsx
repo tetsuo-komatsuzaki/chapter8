@@ -3,6 +3,7 @@ import Image from "next/image";
 import classes from "./page.module.css";
 import { useState, useEffect } from "react";
 import { supabase } from "@/app/_libs/supabase";
+import { useFetch } from "@/app/_hooks/useFetch";
 
 type Props = {
   params: {
@@ -28,42 +29,34 @@ type Post = {
   postCategories: PostCategory[]
 }
 
+type PostDetailResponse = {
+  post: Post;
+};
 
 export default function Detail({ params }: Props) {
   const postId = params.id
-  const [postsDetail, setPostDetail] = useState<Post | null>(null);
-  const [loading, setLoading] = useState<boolean>(false)
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const{data,error,isLoading} = useFetch<PostDetailResponse>(`posts/${postId}`)
+
+ const post = data?.post;
 
   useEffect(() => {
-
-    const fetcher = async () => {
-      setLoading(true)
-      const res = await fetch(`/api/posts/${postId}`)
-      const json = await res.json()
-      setPostDetail(json.post)
-      setLoading(false)
-    };
-    fetcher()
-  }, [postId]);
-
-  useEffect(() => {
-    if (!postsDetail?.thumbnailImageKey) return;
+    if (!post?.thumbnailImageKey) return;
 
     const {
       data: { publicUrl },
     } = supabase.storage
       .from("post_thumbnail")
-      .getPublicUrl(postsDetail.thumbnailImageKey);
+      .getPublicUrl(post.thumbnailImageKey);
 
     setThumbnailUrl(publicUrl);
-  }, [postsDetail]);
+  }, [post]);
 
-  if (loading) {
+  if (isLoading) {
     return <div>読み込み中...</div>
   }
 
-  if (!postsDetail) {
+  if (!post) {
     return <div>記事が見つかりません</div>
   }
 
@@ -71,7 +64,7 @@ export default function Detail({ params }: Props) {
   return (
     <>
       <div className={classes.article}>
-        {postsDetail.thumbnailImageKey && (
+        {post.thumbnailImageKey && (
           <div>
             {thumbnailUrl && (
               <div className={classes.thumbnailWrapper}>
@@ -88,17 +81,17 @@ export default function Detail({ params }: Props) {
         )}
         <div className={classes.meta}>
 
-          <span>{new Date(postsDetail.createdAt).toLocaleDateString()}</span>
+          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
           <span>
-            {postsDetail.postCategories.map((pc) => {
+            {post.postCategories.map((pc) => {
               return (
                 <span className={classes.categories} key={pc.category.id}>{pc.category.name}</span>
               )
             })}
           </span>
         </div>
-        <h1>{`APIで取得した${postsDetail.title}`}</h1>
-        <div dangerouslySetInnerHTML={{ __html: postsDetail.content }}></div>
+        <h1>{`APIで取得した${post.title}`}</h1>
+        <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
       </div>
     </>
   )
