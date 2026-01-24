@@ -8,6 +8,8 @@ import { useSupabaseSession } from "@/_hooks/useSupabaseSession";
 
 
 
+
+
 export default function AdminCreatePostPage() {
     const {token} = useSupabaseSession()
 
@@ -64,6 +66,7 @@ export default function AdminCreatePostPage() {
     onToggleCategory={toggleCategory}
     submitLabel="新規作成"
     onImageUploaded={setThumbnailImageKey}
+    token={token!}
     />
   )
 

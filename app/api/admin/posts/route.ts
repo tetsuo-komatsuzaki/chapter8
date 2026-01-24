@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from "@/app/_libs/prisma"
-import { supabase } from '@/app/_libs/supabase';
+import { supabase } from '@/app/_libs/supabase'
+import { useSupabaseSession } from '@/_hooks/useSupabaseSession'
+import { useEffect } from 'react';
+
 
 
 
 export const GET = async (request: NextRequest) => {
   const token = request.headers.get('Authorization') ?? ''
   const { error } = await supabase.auth.getUser(token)
-  if(error)
+  if (error)
     return NextResponse.json({
-  status:error.message},{status: 400})
+      status: error.message
+    }, { status: 400 })
 
   try {
     const posts = await prisma.post.findMany({
@@ -42,11 +46,18 @@ interface CreatePostRequestBody {
   title: string
   content: string
   categories: { id: number }[]
-  thumbnailImageKey : string
+  thumbnailImageKey: string
 }
 
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
 export const POST = async (request: NextRequest, context: any) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({
+      status: error.message
+    }, { status: 400 })
+
   try {
     // リクエストのbodyを取得
     const body = await request.json()

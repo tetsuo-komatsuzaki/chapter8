@@ -166,6 +166,7 @@ export default function AdminEditPostPage({ params }: Props) {
       onToggleCategory={toggleCategory}
       submitLabel="更新"
       onImageUploaded={setThumbnailImageKey} 
+      token={token!}
     />
   )
 

@@ -26,10 +26,11 @@ submitLabel: string;
 selectedCategories:number[];
 onToggleCategory:(id: number) =>void;
 onImageUploaded: (key: string) => void
+token: string
 }
 
 
-export default function PostForm({title,submitLabel,onSubmit,onDelete,initialValues,selectedCategories,onImageUploaded,onToggleCategory}:PostFormProps){
+export default function PostForm({title,submitLabel,onSubmit,onDelete,initialValues,selectedCategories,onImageUploaded,onToggleCategory,token}:PostFormProps){
   const [categories, setCategories] = useState<Category[]>([]); 
   const [thumbnailImageUrl, setThumbnailImageUrl] = useState<null | string>(null)
   const [thumbnailImageKey, setThumbnailImageKey] = useState('')
@@ -52,13 +53,20 @@ export default function PostForm({title,submitLabel,onSubmit,onDelete,initialVal
   }, [thumbnailImageKey])
   
   useEffect(() => {
+
+    if(!token)return
+    
     const fetchCategories = async () => {
-      const res = await fetch("/api/admin/categories");
+      const res = await fetch("/api/admin/categories", {
+        headers: {
+          Authorization: token,
+        },
+      });
       const data = await res.json();
       setCategories(data.categories);
     }
     fetchCategories();
-  }, [])
+  }, [token])
 
 
   const handleImageChange = async (
