@@ -1,9 +1,20 @@
-import { PrismaClient } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from "@/app/_libs/prisma"
+import { supabase } from '@/app/_libs/supabase'
+import { useSupabaseSession } from '@/_hooks/useSupabaseSession'
+import { useEffect } from 'react';
 
-const prisma = new PrismaClient()
+
+
 
 export const GET = async (request: NextRequest) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({
+      status: error.message
+    }, { status: 400 })
+
   try {
     const posts = await prisma.post.findMany({
       include: {
@@ -35,24 +46,31 @@ interface CreatePostRequestBody {
   title: string
   content: string
   categories: { id: number }[]
-  thumbnailUrl: string
+  thumbnailImageKey: string
 }
 
 // POSTという命名にすることで、POSTリクエストの時にこの関数が呼ばれる
 export const POST = async (request: NextRequest, context: any) => {
+  const token = request.headers.get('Authorization') ?? ''
+  const { error } = await supabase.auth.getUser(token)
+  if (error)
+    return NextResponse.json({
+      status: error.message
+    }, { status: 400 })
+
   try {
     // リクエストのbodyを取得
     const body = await request.json()
 
     // bodyの中からtitle, content, categories, thumbnailUrlを取り出す
-    const { title, content, categories, thumbnailUrl }: CreatePostRequestBody = body
+    const { title, content, categories, thumbnailImageKey }: CreatePostRequestBody = body
 
     // 投稿をDBに生成
     const data = await prisma.post.create({
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     })
 

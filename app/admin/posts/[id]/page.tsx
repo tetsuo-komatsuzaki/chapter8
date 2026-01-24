@@ -20,6 +20,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import PostForm from "@/app/_components/Form/PostForm";
+import { useSupabaseSession } from "@/_hooks/useSupabaseSession";
+import { useAdminFetch } from "@/app/admin/_hooks/useAdminFetch";
 
 /* ===== 型定義 ===== */
 
@@ -37,7 +39,7 @@ type Post = {
   title: string;
   createdAt: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: PostCategory[]
 }
 
@@ -56,41 +58,47 @@ type Props = {
 //  }
 //}
 
+type AdminPostDetailResponse = {
+  post: Post;
+}
+
 /* ===== コンポーネント ===== */
 
 export default function AdminEditPostPage({ params }: Props) {
   const router = useRouter();
   //JavaScriptからページ遷移をするための道具を取得している。後に記載しているrouter.push("/admin/posts");で更新後にページ遷移したいため
   const postId = params.id;
+  const { token } = useSupabaseSession();
 
 
 
   /* ===== 初期表示用データ ===== */
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
+  const [thumbnailImageKey, setThumbnailImageKey] = useState<string>("");
 
 
   /* ===== カテゴリー選択状態 ===== */
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
 
+const {data,error,isLoading} = useAdminFetch<AdminPostDetailResponse>(
+  `posts/${postId}`,
+  token ?? undefined)
+
+  const post = data?.post;
 
   /* ===== 記事詳細取得 ===== */
   useEffect(() => {
-    const fetchPost = async () => {
-      const res = await fetch(`/api/admin/posts/${postId}`)
-      const json = await res.json();
-      const data: Post = json.post;
-      setTitle(data.title);
-      setContent(data.content);
-      setThumbnailUrl(data.thumbnailUrl);
+    if (!post) return;
+      setTitle(post.title);
+      setContent(post.content);
+      setThumbnailImageKey(post.thumbnailImageKey);
       setSelectedCategories(
-        data.postCategories.map((pc) => pc.category.id)
+        post.postCategories.map((pc) => pc.category.id)
       )
-      //PostCategory[] → number[]にデータ整形している作業
-    };
-    fetchPost();
-  }, [postId])
+  }, [post])
+
+
 
   /* ===== チェックボックス切替 ===== */
   const toggleCategory = (id: number) => {
@@ -104,19 +112,23 @@ export default function AdminEditPostPage({ params }: Props) {
   /* ===== 更新処理 ===== */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!token) return
 
     const formData = new FormData(e.currentTarget);
 
     const payload = {
       title: formData.get("title") as string,
       content: formData.get("content") as string,
-      thumbnailUrl: formData.get("thumbnailUrl") as string,
+      thumbnailImageKey,
       categories: selectedCategories.map((id) => ({ id })),
     };
 
     await fetch(`/api/admin/posts/${postId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
       body: JSON.stringify(payload),
     });
 
@@ -125,10 +137,15 @@ export default function AdminEditPostPage({ params }: Props) {
   };
 
   const handleDelete = async () => {
+    if(!token)return
     const ok = window.confirm("本当に削除しますか？");
     if (!ok) return;
     await fetch(`/api/admin/posts/${postId}`, {
       method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
     });
     alert("記事を削除しました");
     router.push("/admin/posts");
@@ -143,11 +160,13 @@ export default function AdminEditPostPage({ params }: Props) {
       initialValues={{
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       }}
       selectedCategories={selectedCategories}
       onToggleCategory={toggleCategory}
       submitLabel="更新"
+      onImageUploaded={setThumbnailImageKey} 
+      token={token!}
     />
   )
 

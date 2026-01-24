@@ -1,13 +1,21 @@
+import { prisma } from '@/app/_libs/prisma'
+import { supabase } from '@/app/_libs/supabase'
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
+
 
 export const GET = async (
   request: NextRequest,
   { params }: { params: { id: string } },
 ) => {
   const { id } = params
+
+   const token = request.headers.get('Authorization') ?? ''
+    const { error } = await supabase.auth.getUser(token)
+    if (error)
+      return NextResponse.json({
+        status: error.message
+      }, { status: 400 })
 
   try {
     const post = await prisma.post.findUnique({
@@ -40,7 +48,7 @@ interface UpdatePostRequestBody {
   title: string
   content: string
   categories: { id: number }[]
-  thumbnailUrl: string
+  thumbnailImageKey: string
 }
 
 // PUTという命名にすることで、PUTリクエストの時にこの関数が呼ばれる
@@ -51,8 +59,15 @@ export const PUT = async (
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
 
+   const token = request.headers.get('Authorization') ?? ''
+    const { error } = await supabase.auth.getUser(token)
+    if (error)
+      return NextResponse.json({
+        status: error.message
+      }, { status: 400 })
+
   // リクエストのbodyを取得
-  const { title, content, categories, thumbnailUrl }: UpdatePostRequestBody = await request.json()
+  const { title, content, categories, thumbnailImageKey  }: UpdatePostRequestBody = await request.json()
 
   try {
     // idを指定して、Postを更新
@@ -63,7 +78,7 @@ export const PUT = async (
       data: {
         title,
         content,
-        thumbnailUrl,
+        thumbnailImageKey,
       },
     })
 
@@ -101,6 +116,12 @@ export const DELETE = async (
 ) => {
   // paramsの中にidが入っているので、それを取り出す
   const { id } = params
+   const token = request.headers.get('Authorization') ?? ''
+    const { error } = await supabase.auth.getUser(token)
+    if (error)
+      return NextResponse.json({
+        status: error.message
+      }, { status: 400 })
 
   try {
     // idを指定して、Postを削除

@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from "@/app/_libs/prisma"
 
 // GETという命名にすることで、GETリクエストの時にこの関数が呼ばれる
 export const GET = async (request: NextRequest) => {
@@ -34,4 +32,5 @@ export const GET = async (request: NextRequest) => {
     if (error instanceof Error)
       return NextResponse.json({ status: error.message }, { status: 400 })
   }
+  
 }

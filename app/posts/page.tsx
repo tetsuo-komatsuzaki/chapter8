@@ -1,7 +1,7 @@
 "use client";
 
 import PostItem from "@/app/_components/PostItem/postItem";
-import { useEffect, useState} from "react";
+import {useFetch} from "@/app/_hooks/useFetch"
 
 
 type Category = {
@@ -18,7 +18,7 @@ type Post = {
   title: string;
   createdAt: string;
   content: string;
-  thumbnailUrl: string;
+  thumbnailImageKey: string;
   postCategories: PostCategory[]
 }
 
@@ -30,32 +30,23 @@ type PostType = {
 
 
 export default function Post() {
-  const [posts,setPosts] = useState<Post[]>([]);
-  const [loading,setLoading] = useState<boolean>(false)
 
-useEffect(() =>{
-  const fetcher = async() =>{
-    setLoading(true)
-    const res = await fetch(`/api/admin/posts`)
-    const json = await res.json();
-    setPosts(json.posts)
-    setLoading(false)
-  }
-  fetcher()
-},[])
-if(loading){
+const {data,error,isLoading} = useFetch<PostType>("posts")
+
+
+if(isLoading){
   return <div>読み込み中...</div>
 }
 
-if(!loading&&posts.length === 0){
+if(!isLoading && data?.posts.length === 0){
   return <div>記事が見つかりません</div>
 }
 
   return (
 
     <>
-      {posts.map((post) => (
-        <PostItem key={post.id} post={post} />
+      {data?.posts.map((post) => (
+        <PostItem key={post.id} post={post}/>
       ))}
 
     </>
