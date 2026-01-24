@@ -1,7 +1,7 @@
 "use client";
 
 import PostItem from "@/app/_components/PostItem/postItem";
-import { useEffect, useState} from "react";
+import useSWR from "swr";
 
 
 type Category = {
@@ -30,32 +30,26 @@ type PostType = {
 
 
 export default function Post() {
-  const [posts,setPosts] = useState<Post[]>([]);
-  const [loading,setLoading] = useState<boolean>(false)
 
-useEffect(() =>{
-  const fetcher = async() =>{
-    setLoading(true)
-    const res = await fetch(`/api/posts`)
-    const json = await res.json();
-    setPosts(json.posts)
-    setLoading(false)
-  }
-  fetcher()
-},[])
-if(loading){
+const fetcher = (url:string) =>
+  fetch(url).then(res=>res.json())
+
+const {data,error,isLoading} = useSWR<PostType>('/api/posts',fetcher)
+
+
+if(isLoading){
   return <div>読み込み中...</div>
 }
 
-if(!loading&&posts.length === 0){
+if(!isLoading && data?.posts.length === 0){
   return <div>記事が見つかりません</div>
 }
 
   return (
 
     <>
-      {posts.map((post) => (
-        <PostItem key={post.id} post={post} />
+      {data?.posts.map((post) => (
+        <PostItem key={post.id} post={post}/>
       ))}
 
     </>

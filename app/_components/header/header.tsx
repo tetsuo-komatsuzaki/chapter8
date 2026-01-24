@@ -42,6 +42,9 @@ export const Header : React.FC=() => {
               <Link href="/sign_in" className="header-link">
               ログイン
               </Link>
+              <Link href="/sign_up" className="header-link">
+              会員登録
+              </Link>
               </>
             )}
           </div>
